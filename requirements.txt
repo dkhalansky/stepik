@@ -1,0 +1,5 @@
+sty
+fuzzywuzzy
+aiohttp
+python-Levenshtein
+argparse
