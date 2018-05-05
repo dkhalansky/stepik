@@ -1,0 +1,155 @@
+stepik(1) -- interaction with stepik.org
+========================================
+
+## SYNOPSIS
+
+    stepik SELECTOR [COMMAND]
+
+    SELECTOR := { [--course-id ID | --course { NAME | LIST_TRAV } ] |
+                  [--lesson-id ID | --lesson { NAME | LIST_TRAV } ] |
+                  [--step-id   ID | --step   { NAME | LIST_TRAV } ] }
+
+    LIST_TRAV := { first | last | INDEX }
+
+    COMMAND := { courses | lessons | steps | send [LANGUAGE] |
+                 text | video | languages | template LANGUAGE }
+
+## DESCRIPTION
+
+**stepik** is a utility for interaction with a MOOC service stepik.org. In
+order to use it, one has to go to https://stepik.org/oauth2/applications/ and
+create a new application with settings `client type = confidential` and
+`authorization grant type = client-credentials`. Next, from the same page one
+has to copy the `client id` and `client secret` of the new app. These
+settings must be written to `~/.config/stepik/stepik.conf`. An example is:
+
+    client_id = ...
+    client_secret = ...
+
+After this, one can use the program.
+
+Each type of query is performed on an entity used by Stepik, be it either a
+course, a lesson, or a lesson step. For example, the query `text` which
+displays the text of a step requires for a step to be specified.
+
+If no command is specified, then the most specific selector of the provided
+ones (step is more specific than a lesson, lesson is more specific than a
+course) will output the id that this selector matches.
+
+## SELECTORS
+
+Selector is a way of telling **stepik** which course, lesson or step the
+query is related to. Each selector can be of one of a several forms: by the
+id (for example, `--course-id`), by an offset (`first`, `last`, or a number
+greater than 0), or by the name. Lookup by the name is done with fuzzy search,
+therefore the query *TAPL* will match a course with the name *AU TAPL 2018*,
+and the query *probib* will match *Probability theory*. Steps are nameless, and
+so they can't be fuzzily searched.
+
+One can also set environment variables `STEPIK_COURSE`, `STEPIK_LESSON`, or
+`STEPIK_STEP` in order to save the course, lesson, or step id across
+invocations.
+
+## COMMANDS
+
+  * `courses`:
+    Output the list of courses in which the user is enrolled.
+
+  * `lessons`:
+    Requires a course selector. Outputs a list of lessons in the course.
+
+  * `steps`:
+    Requires a lesson selector. Outputs a list of steps in the lesson.
+
+  * `text`:
+    Requires a step selector. Outputs the texts of the step in the pandoc
+    markdown format.
+
+  * `video`:
+    Requires a step selector. Outputs the link to this step's video in the
+    highest available resolution.
+
+  * `languages`:
+    Requires a step selector. Works for programming challenge-type steps.
+    Outputs the list of languages supported by the step.
+
+  * `template` LANGUAGE:
+    Requires a step selector. Works for programming challenge-type steps.
+    Outputs a code template for the step in the specified language.
+
+  * `send` [LANGUAGE]:
+    Requires a step selector. For programming challenge-type steps it requires
+    the **LANGUAGE** parameter. It hands in the solution that it receives from
+    the standard input, then waits for the evaluation to complete, and if the
+    solution is wrong, outputs the hint provided by the system.
+
+## SUBMITTING SOLUTIONS
+
+  * Math task, Numeric task, Free answer, Text task:
+    One should pass to the standard input just the string that they would
+    otherwise enter in the website's input field.
+
+  * Test:
+    One should pass to the standard input a set of space-separated zeros and
+    ones, with a one meaning that the item should be checked, and a zero --
+    that it shouldn't. Even if the test only expects a single correct answer,
+    the procedure is the same, only then the set of *0* and *1* will have a
+    single *1*.
+
+  * Sorting task:
+    One should pass a set of space-separated indices of the items in their
+    initial positions.
+
+  * Matching task:
+    One should pass a set of space-separated indices of the items in the
+    second column, effectively sorting the second column so that it matches
+    the first one.
+
+  * Code task:
+    The standard input receives the source code.
+
+## ENVIRONMENT
+
+  * `STEPIK_COURSE`:
+    The course ID; if the variable is set, the course selector can be omitted
+    from the command line.
+
+  * `STEPIK_LESSON`:
+    The lesson ID; if the variable is set, the lesson selector can be omitted
+    from the command line.
+
+  * `STEPIK_STEP`:
+    The step ID; if the variable is set, the step selector can be omitted from
+    the command line.
+
+## EXAMPLES
+
+    # output the course list
+    stepik courses
+    # working with the course "Теория вероятностей"
+    STEPIK_COURSE=`stepik --course вероя`
+    # output the list of lessons
+    # equivalent to "stepik --course вероя lessons" if no variable was specified
+    stepik lessons
+    # working with lesson id = 48659
+    STEPIK_LESSON=48659
+    # output the list of steps
+    stepik steps
+    # get the text of the first step
+    stepik --step 1 text
+    # open the text of the first step in the browser
+    stepik --step 1 text | pandoc -s > text.html
+    firefox text.html
+    # watch the video of the third step
+    mplayer `stepik --step 3 video`
+    # watch the video of the first step in the console
+    mplayer -vo caca -fs -really-quiet `stepik --step 3 video`
+
+## AUTHORS
+
+Dmitry Khalansky, Makeev Vladimir, Chernishov Yaroslav.
+
+## SEE ALSO
+
+mplayer(1), pandoc(1)
+
