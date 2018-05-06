@@ -8,6 +8,10 @@ Usage
 
 Consult `man/` for documentation on how to use this program.
 
+It is recommended to pipe the output into `column -t -s '\t'`, where '\t'
+is a literal tab. This way, the output isn't a mess but a nice-looking
+table.
+
 Building
 --------
 
