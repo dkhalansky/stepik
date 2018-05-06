@@ -1,7 +1,10 @@
-sty
-fuzzywuzzy
-aiohttp
+aiohttp==3.1.3
+fuzzywuzzy==0.16.0
+appdirs==1.4.3
+requests==2.18.4
+sty==1.0.0b6
+lib==3.0.0
+typing==3.6.4
 python-Levenshtein
 argparse
-appdirs
 configparser
