@@ -83,6 +83,10 @@ invocations.
     the standard input, then waits for the evaluation to complete, and if the
     solution is wrong, outputs the hint provided by the system.
 
+  * `task`:
+    Requires a language selector. For steps in which tasks are generated on
+    demand, such as Test, Matching, or Sorting steps, outputs the task.
+
 ## SUBMITTING SOLUTIONS
 
   * Math task, Numeric task, Free answer, Text task:
