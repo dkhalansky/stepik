@@ -311,15 +311,16 @@ def main():
 
         elif unknown[0] == 'text':
             print(stepik_to_markdown(client.get_step_text(args.step)))
-        # elif unknown[0] == 'languages':
-        #     print(client._get_step_by_step_id(args.step).code_options)
+        elif unknown[0] == 'languages':
+            print("\n".join(client._impl._get_step_by_step_id(args.step).code_options['limits'].keys()))
 
         elif unknown[0] == 'template':
-            try:
-                arg = unknown[1]
-
-            except:
-                raise Exception('Bad language template')
+            arg = unknown[1]
+            templates = client._impl._get_step_by_step_id(args.step).code_options['code_templates']
+            if arg in templates:
+                print(templates[arg])
+            else:
+                raise Exception('Only templates for ' + str(list(templates.keys())) + ' are available.')
 
         elif unknown[0] == 'video':
             urls_dict = client.get_step_video(args.step).urls
