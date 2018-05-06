@@ -3,3 +3,5 @@ fuzzywuzzy
 aiohttp
 python-Levenshtein
 argparse
+appdirs
+configparser

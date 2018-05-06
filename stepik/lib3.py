@@ -18,9 +18,6 @@ import requests.auth
 # CLIENT_FILE = APP_FOLDER + "/client_file"
 # ATTEMPT_FILE = APP_FOLDER + "/attempt_file"
 
-CLIENT_ID = "eByNx7sclqIzXfdn6Teinowor5vh4ObcwIvquD3b"
-CLIENT_SECRET = "9aMC6hPALE4zCHCaw9s3TGMkrCBK5byIITInmXOjFMpb7Sv58jtEFBLJ9c3C6joIP9c0lOtYNT5sDzuhNedr15Zdfwpr2dXUOKB9FiaWC87xiMus1bvUUAdV72tlaW13"
-
 
 class Progress:
     def __init__(self, data: dict):

@@ -7,7 +7,9 @@ import argparse
 from fuzzywuzzy import fuzz
 import re
 from stepik.stepik_to_markdown import stepik_to_markdown
-from stepik.lib3 import StepicClient, CLIENT_ID, CLIENT_SECRET
+from stepik.lib3 import StepicClient
+from appdirs import *
+from configparser import ConfigParser
 
 
 # def lesson_type(s, pat=re.compile(r"\d+|first|last|next|prev")):
@@ -32,6 +34,15 @@ def step_type(s, pat=re.compile(r"\d+|first|last")):
         raise argparse.ArgumentTypeError
     return s
 
+def get_credentials():
+    dir = user_config_dir('stepik')
+    conf = os.path.join(dir, 'stepik.conf')
+    with open(conf) as f:
+        conf = "[dummy]\n" + f.read()
+    cprs = ConfigParser()
+    cprs.read_string(conf)
+    ks = cprs['dummy']
+    return (ks['client_id'], ks['client_secret'])
 
 def find_id_by_name(line: str, collection):
     maxi = 0
@@ -84,6 +95,7 @@ def coloring_print(i: float, line, end='\n'):
     print(buf, end=end)
 
 def main():
+    CLIENT_ID, CLIENT_SECRET = get_credentials()
     parser = argparse.ArgumentParser(description="Stepik cli.")
 
     parser.add_argument("--course", "-c", type=str, help='Search and return course id by name')
