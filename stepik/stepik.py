@@ -343,9 +343,40 @@ def main():
             if hint != '':
                 coloring_print(color, result, end=': ')
                 print(hint)
-            elif hint == answer:
+                if hint != answer:
+                    print(answer)
+            else:
                 coloring_print(color, result, end='\n')
-            print(answer)
+                if answer:
+                    print(answer)
+
+        elif unknown[0] == 'task':
+            attempt = client._get_last_attempt_by_step_id(args.step)
+            dataset = attempt.dataset
+            if attempt.type == 'choice':
+                print('multichoice:' if dataset['is_multiple_choice'] else 'single choice:')
+                for s in dataset['options']:
+                    print(' * ' + s)
+            elif attempt.type == 'sorting':
+                i = 1
+                for s in dataset['options']:
+                    print('%2d. %s' % (i, s))
+                    i += 1
+            elif attempt.type == 'matching':
+                fst = []
+                snd = []
+                for p in dataset['pairs']:
+                    fst.append(p['first'])
+                    snd.append(p['second'])
+                for f in fst:
+                    print(' * ' + f)
+                i = 1
+                print()
+                for s in snd:
+                    print('%2d. %s' % (i, s))
+                    i += 1
+            else:
+                print(dataset)
 
         elif unknown[0] == 'task':
             pass

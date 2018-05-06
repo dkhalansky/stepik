@@ -120,10 +120,11 @@ class StepicClient:
 
     # this get raw data, but may be useful (or not)
     def _get_last_attempt_by_step_id(self, step_id: int) -> Optional[Attempt]:
+        step = self._impl._get_step_by_step_id(step_id)
         data = self._impl._get_request_api("attempts", {'step': str(step_id)})
 
         if len(data['attempts']) > 0:
-            return Attempt(data['attempts'][0])
+            return Attempt(step.type, data['attempts'][0])
         else:
             return None
 
@@ -156,7 +157,7 @@ class StepicClient:
             }
         elif step.type == 'choice':
             reply = {
-                'choices' : list(map(lambda x : True if x else False,
+                'choices' : list(map(lambda x : True if int(x) else False,
                                      data.split()))
             }
         elif step.type == 'code':

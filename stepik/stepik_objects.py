@@ -94,7 +94,8 @@ class Course:
 
 
 class Attempt:
-    def __init__(self, steps_data: dict):
+    def __init__(self, type: str, steps_data: dict):
+        self.type = type
         self.id = steps_data['id']
         self.dataset = steps_data['dataset']  # dict with task data
         self.dataset_url = steps_data['dataset_url']
