@@ -6,8 +6,8 @@ import sys
 import argparse
 from fuzzywuzzy import fuzz
 import re
-from stepik_to_markdown import stepik_to_markdown
-from lib3 import StepicClient, CLIENT_ID, CLIENT_SECRET
+from stepik.stepik_to_markdown import stepik_to_markdown
+from stepik.lib3 import StepicClient, CLIENT_ID, CLIENT_SECRET
 
 
 # def lesson_type(s, pat=re.compile(r"\d+|first|last|next|prev")):
@@ -83,8 +83,7 @@ def coloring_print(i: float, line, end='\n'):
     buf = fg.color + str(line) + fg.rs
     print(buf, end=end)
 
-
-if __name__ == '__main__':
+def main():
     parser = argparse.ArgumentParser(description="Stepik cli.")
 
     parser.add_argument("--course", "-c", type=str, help='Search and return course id by name')
