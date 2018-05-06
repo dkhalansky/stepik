@@ -272,8 +272,7 @@ def main():
             try:
                 course_sections_list = client.get_sections(args.course)
                 for i, section in enumerate(course_sections_list, start=1):
-                    print(i, section.title, sep='\t', end='\t')
-                    # TODO раскрасить дедлайны
+                    print(i, ' ', section.title, sep='\t', end='\t')
                     coloring_progress(section)
 
                     if section.soft_deadline is not None:
@@ -351,6 +350,6 @@ def main():
         elif unknown[0] == 'task':
             pass
         else:
-            raise Exception('Unknown command')
+            raise Exception('Unknown command', unknown[0])
     else:
         print(out_variable)
