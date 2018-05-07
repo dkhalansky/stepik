@@ -378,9 +378,6 @@ def main():
                     i += 1
             else:
                 print(dataset)
-
-        elif unknown[0] == 'task':
-            pass
         else:
             raise Exception('Unknown command', unknown[0])
     else:
