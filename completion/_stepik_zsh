@@ -1,0 +1,54 @@
+#compdef stepik
+
+typeset -A opt_args
+
+local context state line
+
+_arguments -s -S \
+  "(--course )--course-id+[Select the course]:the ID:->courses" \
+  "(--lesson )--lesson-id+[Select the lesson]:the ID:->lessons" \
+  "(--course-id)--course+[Fuzzy-search the course]:search string:" \
+  "(--lesson-id)--lesson+[Fuzzy-search the lesson]:search string:" \
+  "--step-id+[Select the step]:The ID:->steps" && return 0
+
+local -a lst output
+case $state in
+  courses)
+    IFS=$'\n' lst=($(stepik_complete --course-id | tr '\t' :))
+    _describe 'course id' lst
+    ;;
+  lessons)
+    local p course_id
+    p=''
+    course_id=''
+    for w in $words; do
+        if [ "$p" = "--course-id" ]; then
+            course_id="$w"
+        elif [ "$p" = "--course" ]; then
+            course_id=$(stepik --course $w)
+        fi
+        p="$w"
+    done
+    IFS=$'\n' lst=($(stepik_complete --lesson-id $course_id | tr '\t' :))
+    _describe 'lesson id' lst
+    ;;
+  steps)
+    local p lesson_id
+    p=''
+    lesson_id=''
+    for w in $words; do
+        if [ "$p" = "--lesson-id" ]; then
+            lesson_id="$w"
+        elif [ "$p" = "--lesson" ]; then
+            course_id=$(stepik --lesson $w)
+        fi
+        p="$w"
+    done
+    IFS=$'\n' lst=($(stepik_complete --step-id $lesson_id | tr '\t' :))
+    _describe 'step id' lst
+    ;;
+  *)
+    IFS=$'\n' lst=($(stepik_complete | tr '\t' :))
+    _describe 'command' lst
+    ;;
+esac

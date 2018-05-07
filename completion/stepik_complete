@@ -1,0 +1,46 @@
+#!/bin/sh
+conf=`cat "$HOME/.config/stepik/stepik.conf"`
+client_id=`printf "%s\n" "$conf" | grep client_id | cut -d= -f2 | tr -d ' \t\n'`
+client_secret=`printf "%s\n" "$conf" | grep client_secret | cut -d= -f2 | tr -d ' \t\n'`
+key=`curl -sSd 'grant_type=client_credentials' --basic -u "$client_id:$client_secret" https://stepik.org/oauth2/token/ | jq -r '.access_token'`
+get() {
+    query="$1"
+    params="$2"
+    selector="$3"
+    page=1
+    keep="true"
+    while "$keep"; do
+        r=$(curl -sSH 'Authorization: Bearer '"$key" https://stepik.org/api/"$query?$params&page=$page" |
+            jq -jr '(.meta | .has_next), "\n", '"(.$query[] | $selector)");
+        keep=$(printf "%s" "$r" | head -n 1)
+        page=$((page+1))
+        printf "%s\n" "$r" | tail -n +2
+    done
+}
+
+case "$1" in
+    "--course-id")
+        get courses enrolled=true '.id,"\t", .title,"\n"'
+        ;;
+    "--lesson-id")
+        course="${2:-$STEPIK_COURSE}"
+        [ -n "$course" ] || exit 1
+        get lessons course="$course" '.id,"\t", .title,"\n"'
+        ;;
+    "--step-id")
+        lesson="${2:-$STEPIK_LESSON}"
+        [ -n "$lesson" ] || exit 1
+        get steps lesson="$lesson" '.id,"\t", .block.name,"\n"'
+        ;;
+    "")
+        printf "courses\tA list of courses\n"
+        printf "lessons\tA list of lessons\n"
+        printf "steps\tA list of steps\n"
+        printf "text\tText of the step\n"
+        printf "video\tVideo of the step\n"
+        printf "languages\tList of languages for the step\n"
+        printf "template\tA code template for the step\n"
+        printf "send\tSend a solution\n"
+        printf "task\tThe task statement\n"
+        ;;
+esac
