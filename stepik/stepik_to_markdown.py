@@ -16,6 +16,7 @@ def stepik_to_markdown(s):
     stack = []
     link  = []
     do_not_escape = []
+    in_pre = []
 
     def prepare_data(data):
         def escape(data):
@@ -85,22 +86,30 @@ def stepik_to_markdown(s):
                         src = v
                 predata.append("![%s](%s)" % (alt, src))
             elif tag == 'code':
-                predata.append("```" + attrs[0][1])
-                predata.append("\n")
+                if in_pre:
+                    predata.append("```" + (attrs[0][1] if len(attrs) else ''))
+                    predata.append("\n")
+                else:
+                    predata.append(' `')
                 do_not_escape.append(())
             elif tag == 'pre':
+                in_pre.append(True)
                 predata.append("\n")
             else:
                 raise ValueError(tag)
 
         def handle_endtag(self, tag):
             if tag == 'pre':
+                in_pre.pop()
                 predata.append("\n")
             elif tag == 'span':
                 pass
             elif tag == 'code':
-                predata.append("\n")
-                predata.append("```")
+                if in_pre:
+                    predata.append("\n")
+                    predata.append("```")
+                else:
+                    predata.append('` ')
                 do_not_escape.pop()
             elif tag in {'h1', 'h2'}:
                 predata.append("\n")
